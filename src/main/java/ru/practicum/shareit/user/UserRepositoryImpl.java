@@ -3,9 +3,8 @@ package ru.practicum.shareit.user;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.error.UserNotFoundException;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 @Component
 public class UserRepositoryImpl implements UserRepository {
@@ -15,8 +14,8 @@ public class UserRepositoryImpl implements UserRepository {
     private int id = 0;
 
     @Override
-    public List<User> findAll() {
-        return new ArrayList<>(users.values());
+    public Collection<User> findAll() {
+        return users.values();
     }
 
     @Override
@@ -45,10 +44,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User delete(int userId) {
-        try {
-            return users.remove(userId);
-        } catch (RuntimeException e) {
-            throw new UserNotFoundException(String.format("Пользователь с идентификатором %d не существует.", userId));
+        User deleteUser = users.remove(userId);
+        if (deleteUser == null) {
+            throw new UserNotFoundException(String.format("Пользователь с идентификатором %d не существует", userId));
+        } else {
+            return deleteUser;
         }
     }
 

@@ -5,54 +5,49 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequestMapping("/items")
 @Validated
 public class ItemController {
 
-    private ItemServiceImpl itemService;
+    private ItemService itemService;
 
     @Autowired
-    public ItemController(ItemServiceImpl itemService) {
+    public ItemController(ItemService itemService) {
         this.itemService = itemService;
     }
 
     @PostMapping
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") @NotNull Integer userId, @RequestBody @Valid Item item) {
-        log.info("Добавляется вещь: {}", item);
-        return itemService.createItem(userId, item);
+    public ItemDto create(@RequestHeader("X-Sharer-User-Id") Integer userId, @RequestBody @Valid ItemDto itemDto) {
+        log.info("Добавляется вещь: {}", itemDto);
+        return itemService.createItem(userId, itemDto);
     }
 
     @GetMapping("/{itemId}")
-    public Item findItemById(@PathVariable int itemId) {
-        log.info("Ищется вещь по идентификатору: {}", itemService.findItemById(itemId));
+    public ItemDto findItemById(@PathVariable int itemId) {
+        log.info("Ищется вещь по идентификатору: {}", itemId);
         return itemService.findItemById(itemId);
     }
 
     @GetMapping
-    public List<Item> findItemByUserId(@RequestHeader("X-Sharer-User-Id") int userId) {
-        log.info("Ищется вещь по пользователю: {}", itemService.findItemByUserId(userId));
+    public List<ItemDto> findItemByUserId(@RequestHeader("X-Sharer-User-Id") int userId) {
+        log.info("Ищется вещь по пользователю: {}", userId);
         return itemService.findItemByUserId(userId);
     }
 
     @PatchMapping("/{itemId}")
-    public Item patch(@RequestHeader("X-Sharer-User-Id") @NotNull Integer userId, @PathVariable int itemId, @RequestBody Item item) {
-        log.info("Обновляется пользователь: {}", item);
-        return itemService.patchItem(userId, itemId, item);
+    public ItemDto patch(@RequestHeader("X-Sharer-User-Id") Integer userId, @PathVariable int itemId, @RequestBody ItemDto itemDto) {
+        log.info("Обновляется вещь по идентификатору: {}", itemId);
+        return itemService.patchItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/search")
-    public List<Item> getBySearch(@RequestParam(value = "text",  required = false) String text) {
+    public List<ItemDto> getBySearch(@RequestParam(value = "text",  required = false) String text) {
         log.info("Ищется вещь по параметру: {}", text);
         return itemService.getItemBySearch(text);
     }

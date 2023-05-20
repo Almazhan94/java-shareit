@@ -17,4 +17,11 @@ public class ErrorHandler {
         log.info(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemNotFoundException(final ItemNotFoundException e) {
+        log.info(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
 }

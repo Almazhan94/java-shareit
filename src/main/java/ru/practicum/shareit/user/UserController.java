@@ -3,13 +3,11 @@ package ru.practicum.shareit.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequestMapping(path = "/users")
@@ -22,39 +20,34 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping
+    public UserDto create(@RequestBody @Valid UserDto userDto) {
+        log.info("Добавляется пользователь: {}", userDto);
+        return userService.createUser(userDto);
+    }
+
     @GetMapping
-    public List<User> findAll() {
-        log.info("Количество пользователей в текущий момент: {}", userService.findAllUser().size());
-        return userService.findAllUser();
+    public List<UserDto> findAll() {
+        List<UserDto> allUsers = userService.findAllUser();
+        log.info("Количество пользователей в текущий момент: {}", allUsers.size());
+        return allUsers;
     }
 
     @GetMapping("/{userId}")
-    public User findById(@PathVariable int userId) {
-        log.info("Ищется пользователь: {}", userService.findUserById(userId));
+    public UserDto findById(@PathVariable int userId) {
+        log.info("Ищется пользователь с идентификатором: {}", userId);
         return userService.findUserById(userId);
     }
 
     @DeleteMapping("/{userId}")
-    public User delete(@PathVariable int userId) {
-        log.info(String.format("Удаляется пользователь с идентификатором %d ", userId));
+    public UserDto delete(@PathVariable int userId) {
+        log.info("Удаляется пользователь с идентификатором: {}", userId);
         return userService.deleteUser(userId);
     }
 
-    @PostMapping
-    public User create(@RequestBody @Valid User user) {
-        log.info("Добавляется пользователь: {}", user);
-        return userService.createUser(user);
-    }
-
-    @PutMapping
-    public User update(@RequestBody @Valid User user) {
-        log.info("Обновляется пользователь: {}", user);
-        return userService.updateUser(user);
-    }
-
     @PatchMapping("/{userId}")
-    public User patch(@PathVariable int userId, @RequestBody User user) {
-        log.info("Обновляется пользователь: {}", user);
-        return userService.patchUser(userId, user);
+    public UserDto patch(@PathVariable int userId, @RequestBody UserDto userDto) {
+        log.info("Обновляется пользователь: {}", userDto);
+        return userService.patchUser(userId, userDto);
     }
 }
