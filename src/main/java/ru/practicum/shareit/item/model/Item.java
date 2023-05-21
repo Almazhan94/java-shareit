@@ -2,7 +2,10 @@ package ru.practicum.shareit.item.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.practicum.shareit.user.User;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -21,8 +24,9 @@ public class Item {
     @NotNull
     private Boolean available;
 
-    @NotNull
-    int owner;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
     int request;
 }

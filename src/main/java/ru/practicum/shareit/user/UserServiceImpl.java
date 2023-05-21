@@ -2,18 +2,16 @@ package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.Valid;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Validated
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository) {
@@ -63,15 +61,12 @@ public class UserServiceImpl implements UserService {
                 }
                 patchUser.setEmail(userDto.getEmail());
             }
-            validator(patchUser);
+
+            userRepository.update(patchUser);
         } else {
             throw new RuntimeException(String.format("Пользователь с идентификатором %d не существует", userId));
         }
         return UserMapper.toUserDto(patchUser);
-    }
-
-    private void validator(@Valid User patchUser) {
-        userRepository.update(patchUser);
     }
 
 }

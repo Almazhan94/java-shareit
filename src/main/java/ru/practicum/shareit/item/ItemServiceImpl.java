@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.error.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.util.ArrayList;
@@ -13,9 +14,9 @@ import java.util.List;
 @Service
 public class ItemServiceImpl implements ItemService {
 
-    ItemRepository itemRepository;
+    private final ItemRepository itemRepository;
 
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository) {
@@ -25,9 +26,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(int userId, ItemDto itemDto) {
-        Item item = ItemMapper.toItem(userId, itemDto);
-        userRepository.findUserById(userId);
-        Item createItem = itemRepository.create(userId, item);
+        User owner = userRepository.findUserById(userId);
+        Item item = ItemMapper.toItem(owner, itemDto);
+        Item createItem = itemRepository.create(owner, item);
         return ItemMapper.toItemDto(createItem);
     }
 
@@ -57,9 +58,7 @@ public class ItemServiceImpl implements ItemService {
         String textToLowerCase = text.toLowerCase();
         for (Item item : itemRepository.findAll()) {
             if (item.getAvailable()) {
-                String nameToLowerCase = item.getName().toLowerCase();
-                String descriptionToLowerCase = item.getDescription().toLowerCase();
-                if (nameToLowerCase.contains(textToLowerCase) || descriptionToLowerCase.contains(textToLowerCase)) {
+                if (item.getName().toLowerCase().contains(textToLowerCase) || item.getDescription().toLowerCase().contains(textToLowerCase)) {
                     itemSearch.add(item);
                 }
             }
@@ -71,13 +70,12 @@ public class ItemServiceImpl implements ItemService {
         return itemDtoList;
     }
 
-
     @Override
     public ItemDto patchItem(int userId, int itemId, ItemDto itemDto) {
-        userRepository.findUserById(userId);
+        User owner = userRepository.findUserById(userId);
         Item itemPatch = itemRepository.findById(itemId);
-        Item item = ItemMapper.toItem(userId, itemDto);
-        if (itemPatch.getOwner() == userId) {
+        Item item = ItemMapper.toItem(owner, itemDto);
+        if (itemPatch.getOwner().getId() == owner.getId()) {
             if (item.getName() != null) {
                 itemPatch.setName(item.getName());
             }
