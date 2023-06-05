@@ -6,24 +6,35 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
-import java.time.LocalDate;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "bookings")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Booking {
 
-   private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
+    @Column(name = "start_time")
     private LocalDateTime startTime;
 
+    @Column(name = "end_time")
     private LocalDateTime endTime;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "booker_id", nullable = false)
     private User booker;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
 }

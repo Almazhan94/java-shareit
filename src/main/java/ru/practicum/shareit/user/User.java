@@ -2,21 +2,22 @@ package ru.practicum.shareit.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.persistence.*;
 
-
+@Entity
+@Table(name = "users")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @NotBlank
     private String name;
 
-    @NotBlank
-    @Email
     private String email;
 }
