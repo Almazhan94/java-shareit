@@ -92,7 +92,7 @@ public class ItemServiceImpl implements ItemService {
         ItemDto itemPatchInDto = findItemById(itemId);
         Item itemPatch = ItemMapper.toItem(owner, itemPatchInDto);
         Item item = ItemMapper.toItem(owner, itemDto);
-        if (itemPatch.getOwner().getId() == owner.getId()) {
+        if (itemPatch.getOwner().getId().equals(owner.getId())) {
             if (item.getName() != null) {
                 itemPatch.setName(item.getName());
             }
