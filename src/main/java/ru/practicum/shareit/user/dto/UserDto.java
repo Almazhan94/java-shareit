@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class UserDto {
 
-    private int id;
+    private Integer id;
 
     @NotBlank(groups = CreateStep.class)
     private String name;
@@ -22,4 +22,8 @@ public class UserDto {
     @NotBlank(groups = CreateStep.class)
     @Email(groups = {CreateStep.class, UpdateStep.class})
     private String email;
+
+    public UserDto(Integer id) {
+
+    }
 }
