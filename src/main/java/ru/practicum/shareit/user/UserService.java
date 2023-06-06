@@ -15,6 +15,4 @@ public interface UserService {
     void deleteUser(int userId);
 
     UserDto patchUser(int userId, UserDto userDto);
-
-    User findUserFromDb(int userId);
 }

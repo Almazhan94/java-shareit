@@ -13,17 +13,17 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepositoryDb userRepositoryDb;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepositoryDb userRepositoryDb) {
-        this.userRepositoryDb = userRepositoryDb;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public List<UserDto> findAllUser() {
         List<UserDto> userDtoList = new ArrayList<>();
-        for (User user : userRepositoryDb.findAll()) {
+        for (User user : userRepository.findAll()) {
             userDtoList.add(UserMapper.toUserDto(user));
         }
         return userDtoList;
@@ -32,13 +32,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserDto userDto) {
         User userFromDto = UserMapper.toUser(userDto);
-        User user = userRepositoryDb.save(userFromDto);
+        User user = userRepository.save(userFromDto);
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserDto findUserById(int userId) {
-        Optional<User> user = userRepositoryDb.findById(userId);
+        Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()) {
             return UserMapper.toUserDto(user.get());
         } else {
@@ -48,28 +48,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(int userId) {
-        userRepositoryDb.deleteById(userId);
+        userRepository.deleteById(userId);
     }
 
     @Override
     public UserDto patchUser(int userId, UserDto userDto) {
-        UserDto findUser = findUserById(userId);
-        User patchUser = UserMapper.toUser(findUser);
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException(String.format("Пользователь с идентификатором %d не существует", userId));
+        }
+        User patchUser = userOptional.get();
         if (userDto.getName() != null) {
             patchUser.setName(userDto.getName());
         }
         if (userDto.getEmail() != null) {
             patchUser.setEmail(userDto.getEmail());
         }
-        userRepositoryDb.save(patchUser);
+        userRepository.save(patchUser);
         return UserMapper.toUserDto(patchUser);
     }
-
-    @Override
-    public User findUserFromDb(int userId) {
-        return userRepositoryDb.getReferenceById(userId);
-    }
-
 }
 
 

@@ -20,10 +20,10 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "start_time")
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Column(name = "end_time")
+    @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
     @ManyToOne(optional = false)
@@ -35,6 +35,7 @@ public class Booking {
     private User booker;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Status status;
 
 }

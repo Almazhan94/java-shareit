@@ -50,9 +50,9 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getBySearch(@RequestHeader("X-Sharer-User-Id") Integer ownerId, @RequestParam(value = "text",  required = false) String text) {
+    public List<ItemDto> getBySearch(@RequestParam(value = "text",  required = false) String text) {
         log.info("Ищется вещь по параметру: {}", text);
-        return itemService.getItemBySearch(text, ownerId);
+        return itemService.getItemBySearch(text);
     }
 
     @PostMapping("/{itemId}/comment")

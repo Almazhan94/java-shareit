@@ -31,10 +31,8 @@ public class ItemMapper {
     }
 
     public static ItemBookingDto toItemBookingDto(Booking lastBooking, Booking nextBooking, Item item, List<CommentDto> comments) {
-        //BookingInItemDto lastBookingInItemDto = null;
-        // BookingInItemDto nextBookingInItemDto = null;
-        BookingInItemDto lastBookingInItemDto = new BookingInItemDto();
-        BookingInItemDto nextBookingInItemDto = new BookingInItemDto();
+        BookingInItemDto lastBookingInItemDto;
+        BookingInItemDto nextBookingInItemDto;
         if (lastBooking == null || lastBooking.getId() == null) {
             lastBookingInItemDto = null;
         } else {

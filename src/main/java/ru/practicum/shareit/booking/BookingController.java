@@ -44,7 +44,7 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> findByState(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                         @RequestParam(value = "state", required = false, defaultValue = "ALL") String state) {
-        log.info("Ищется бронирования по пользователю: {}", userId);
+        log.info("Ищется бронирования по статусу: {}", state);
         return bookingService.findByState(userId, state);
     }
 

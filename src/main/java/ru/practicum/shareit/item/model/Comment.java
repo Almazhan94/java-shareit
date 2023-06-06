@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
@@ -29,5 +30,6 @@ public class Comment {
     @JoinColumn(name = "author_id", nullable = false)
     User author;
 
+    @CreationTimestamp
     LocalDateTime created;
 }
