@@ -40,9 +40,9 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public UserDto delete(@PathVariable int userId) {
+    public void delete(@PathVariable int userId) {
         log.info("Удаляется пользователь с идентификатором: {}", userId);
-        return userService.deleteUser(userId);
+        userService.deleteUser(userId);
     }
 
     @PatchMapping("/{userId}")

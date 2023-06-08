@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.AddCommentDto;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
@@ -29,15 +32,15 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto findItemById(@PathVariable int itemId) {
+    public ItemBookingDto findItemById(@RequestHeader("X-Sharer-User-Id") int userId, @PathVariable int itemId) {
         log.info("Ищется вещь по идентификатору: {}", itemId);
-        return itemService.findItemById(itemId);
+        return itemService.findItemByIdWithBooking(userId, itemId);
     }
 
     @GetMapping
-    public List<ItemDto> findItemByUserId(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemBookingDto> findItemByUserId(@RequestHeader("X-Sharer-User-Id") int userId) {
         log.info("Ищется вещь по пользователю: {}", userId);
-        return itemService.findItemByUserId(userId);
+        return itemService.findAllItemWithBooking(userId);
     }
 
     @PatchMapping("/{itemId}")
@@ -50,6 +53,14 @@ public class ItemController {
     public List<ItemDto> getBySearch(@RequestParam(value = "text",  required = false) String text) {
         log.info("Ищется вещь по параметру: {}", text);
         return itemService.getItemBySearch(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                                 @PathVariable int itemId,
+                                 @RequestBody @Valid AddCommentDto addCommentDto) {
+        log.info("Добавляется комментарий: {}", addCommentDto);
+        return itemService.addComment(userId, itemId, addCommentDto);
     }
 
 }

@@ -12,7 +12,7 @@ public interface UserService {
 
     UserDto findUserById(int userId);
 
-    UserDto deleteUser(int userId);
+    void deleteUser(int userId);
 
     UserDto patchUser(int userId, UserDto userDto);
 }
