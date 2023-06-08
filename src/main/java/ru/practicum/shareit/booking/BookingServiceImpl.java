@@ -11,13 +11,11 @@ import ru.practicum.shareit.error.UserNotFoundException;
 import ru.practicum.shareit.error.ValidationException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
@@ -28,22 +26,16 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
 
-    private final ItemService itemService;
-
     private final ItemRepository itemRepository;
-
-    private final UserService userService;
 
     private final UserRepository userRepository;
 
     private LocalDateTime time = LocalDateTime.now();
 
     @Autowired
-    public BookingServiceImpl(BookingRepository bookingRepository, ItemService itemService, ItemRepository itemRepository, UserService userService, UserRepository userRepository) {
+    public BookingServiceImpl(BookingRepository bookingRepository, ItemRepository itemRepository, UserRepository userRepository) {
         this.bookingRepository = bookingRepository;
-        this.itemService = itemService;
         this.itemRepository = itemRepository;
-        this.userService = userService;
         this.userRepository = userRepository;
     }
 
@@ -141,42 +133,48 @@ public class BookingServiceImpl implements BookingService {
             throw new ItemNotFoundException(String.format("Пользователь с идентификатором %d не существует", userId));
         }
         UserDto userDto = UserMapper.toUserDto(userOptional.get());
-        if (state.equals(State.ALL.toString())) {
+        State enumState;
+        try {
+            enumState = Enum.valueOf(State.class, state);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(String.format("Unknown state: %s", state));
+        }
+        if (enumState == State.ALL) {
             bookings = bookingRepository.findByBookerId(userId, Sort.by(Sort.Direction.DESC, "startTime"));
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(userDto, ItemMapper.toItemDto(booking.getItem()), booking));
             }
             return bookingDtoList;
         }
-        if (state.equals(State.CURRENT.toString())) {
+        if (enumState == State.CURRENT) {
             bookings = bookingRepository.findByBookerIdAndStartTimeIsBeforeAndEndTimeIsAfter(userId, time, time);
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(userDto, ItemMapper.toItemDto(booking.getItem()), booking));
             }
             return bookingDtoList;
         }
-        if (state.equals(State.PAST.toString())) {
+        if (enumState == State.PAST) {
             bookings = bookingRepository.findByBookerIdAndEndTimeIsBefore(userId, time, Sort.by(Sort.Direction.DESC, "endTime"));
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(userDto, ItemMapper.toItemDto(booking.getItem()), booking));
             }
             return bookingDtoList;
         }
-        if (state.equals(State.FUTURE.toString())) {
+        if (enumState == State.FUTURE) {
             bookings = bookingRepository.findByBookerIdAndStartTimeIsAfter(userId, time, Sort.by(Sort.Direction.DESC, "startTime"));
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(userDto, ItemMapper.toItemDto(booking.getItem()), booking));
             }
             return bookingDtoList;
         }
-        if (state.equals(Status.WAITING.toString())) {
+        if (enumState == State.WAITING) {
             bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.WAITING);
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(userDto, ItemMapper.toItemDto(booking.getItem()), booking));
             }
             return bookingDtoList;
         }
-        if (state.equals(Status.REJECTED.toString())) {
+        if (enumState == State.REJECTED) {
             bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.REJECTED);
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(userDto, ItemMapper.toItemDto(booking.getItem()), booking));
@@ -201,62 +199,61 @@ public class BookingServiceImpl implements BookingService {
         for (Item item : items) {
             itemIdSet.add(item.getId());
         }
-        if (state.equals(State.ALL.toString())) {
+        State enumState;
+        try {
+             enumState = Enum.valueOf(State.class, state);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(String.format("Unknown state: %s", state));
+        }
+        if (enumState == State.ALL) {
             bookings = bookingRepository.findAllByItemIdIn(itemIdSet, Sort.by(Sort.Direction.DESC, "startTime"));
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(UserMapper.toUserDto(booking.getBooker()),
                         ItemMapper.toItemDto(booking.getItem()),
                         booking));
             }
-            return bookingDtoList;
         }
-        if (state.equals(State.CURRENT.toString())) {
+        if (enumState == State.CURRENT) {
             bookings = bookingRepository.findByItemIdInAndStartTimeIsBeforeAndEndTimeIsAfter(itemIdSet, time, time, Sort.by(Sort.Direction.DESC, "startTime"));
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(UserMapper.toUserDto(booking.getBooker()),
                         ItemMapper.toItemDto(booking.getItem()),
                         booking));
             }
-            return bookingDtoList;
         }
-        if (state.equals(State.PAST.toString())) {
+        if (enumState == State.PAST) {
             bookings = bookingRepository.findByItemIdInAndEndTimeIsBefore(itemIdSet, time, Sort.by(Sort.Direction.DESC, "startTime"));
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(UserMapper.toUserDto(booking.getBooker()),
                         ItemMapper.toItemDto(booking.getItem()),
                         booking));
             }
-            return bookingDtoList;
         }
-        if (state.equals(State.FUTURE.toString())) {
+        if (enumState == State.FUTURE) {
             bookings = bookingRepository.findByItemIdInAndEndTimeIsAfter(itemIdSet, time, Sort.by(Sort.Direction.DESC, "startTime"));
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(UserMapper.toUserDto(booking.getBooker()),
                         ItemMapper.toItemDto(booking.getItem()),
                         booking));
             }
-            return bookingDtoList;
         }
-        if (state.equals(Status.WAITING.toString())) {
+        if (enumState == State.WAITING) {
             bookings = bookingRepository.findByItemIdInAndStatus(itemIdSet, Status.WAITING);
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(UserMapper.toUserDto(booking.getBooker()),
                         ItemMapper.toItemDto(booking.getItem()),
                         booking));
             }
-            return bookingDtoList;
         }
-        if (state.equals(Status.REJECTED.toString())) {
+        if (enumState == State.REJECTED) {
             bookings = bookingRepository.findByItemIdInAndStatus(itemIdSet, Status.REJECTED);
             for (Booking booking : bookings) {
                 bookingDtoList.add(BookingMapper.toBookingDto(UserMapper.toUserDto(booking.getBooker()),
                         ItemMapper.toItemDto(booking.getItem()),
                         booking));
             }
-            return bookingDtoList;
-        } else {
-            throw new ValidationException(String.format("Unknown state: %s", state));
         }
+        return bookingDtoList;
     }
 
     private void validator(LocalDateTime start, LocalDateTime end) {
