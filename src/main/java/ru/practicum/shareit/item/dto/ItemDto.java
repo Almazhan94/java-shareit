@@ -24,8 +24,4 @@ public class ItemDto {
     private Boolean available;
 
     Integer requestId;
-
-    public ItemDto(Integer id, String name) {
-
-    }
 }

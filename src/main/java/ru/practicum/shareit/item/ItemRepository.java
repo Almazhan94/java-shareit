@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
 
@@ -17,4 +18,8 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
             " or upper(i.description) like upper(concat('%', ?1, '%'))) " +
             " and (i.available = true)")
     List<Item> search(String text);
+
+    List<Item> findItemByRequestIdIn(Set<Integer> requestIdSet);
+
+    List<Item> findItemByRequestId(Integer id);
 }

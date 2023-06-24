@@ -1,4 +1,4 @@
-DROP table IF EXISTS requests, users, items, bookings, comments CASCADE;
+DROP table requests, users, items, bookings, comments CASCADE;
 
 /*DROP table requests CASCADE;*/
 

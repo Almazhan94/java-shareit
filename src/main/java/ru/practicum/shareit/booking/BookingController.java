@@ -43,15 +43,19 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> findByState(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                        @RequestParam(value = "state", required = false, defaultValue = "ALL") String state) {
+                                        @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
+                                        @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+                                        @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
         log.info("Ищется бронирования по статусу: {}", state);
-        return bookingService.findByState(userId, state);
+        return bookingService.findByState(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findOwnerBooking(@RequestHeader("X-Sharer-User-Id") Integer ownerId,
-                                        @RequestParam(value = "state", required = false, defaultValue = "ALL") String state) {
+                                             @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
+                                             @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+                                             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
         log.info("Ищется бронирования по пользователю: {}", ownerId);
-        return bookingService.findOwnerBooking(ownerId, state);
+        return bookingService.findOwnerBooking(ownerId, state, from, size);
     }
 }
