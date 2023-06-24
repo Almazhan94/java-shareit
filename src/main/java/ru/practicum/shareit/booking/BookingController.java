@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
+import ru.practicum.shareit.error.Generated;
 
 import javax.validation.Valid;
 import java.util.List;
 
+@Generated
 @Slf4j
 @RestController
 @RequestMapping(path = "/bookings")
