@@ -134,7 +134,6 @@ class ItemServiceImplUnitTest {
 
         when(itemRepository.save(item))
                 .thenReturn(item);
-        
         ItemDto itemDto = itemService.patchItem(user.getId(), item.getId(), ItemMapper.toItemDto(item));
 
         assertEquals(itemDto.getId(), item.getId());

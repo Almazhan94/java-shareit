@@ -9,27 +9,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.CreateBookingDto;
-import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.ItemMapper;
-import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
-import ru.practicum.shareit.user.UserRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = BookingController.class)
@@ -78,29 +68,6 @@ class BookingControllerTest {
     }
 
     @Test
-    void create()throws Exception {
-        /*BookingDto bookingDto = BookingMapper.toBookingDto(UserMapper.toUserDto(user2),
-                ItemMapper.toItemDto(item), booking);
-
-        when(bookingService.create(user2.getId(),
-                new CreateBookingDto(item.getId(),
-                LocalDateTime.of(2025, 1, 1, 12, 0),
-                LocalDateTime.of(2030, 1, 1, 12, 0))))
-                .thenReturn(bookingDto);
-
-        mockMvc.perform(post("/bookings")
-                        .content(mapper.writeValueAsString(bookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(bookingDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.start", is(bookingDto.getStart()), String.class))
-                .andExpect(jsonPath("$.status", is(bookingDto.getStatus()), String.class));*/
-    }
-
-    @Test
     void findBookingById()throws Exception {
         BookingDto bookingDto = BookingMapper.toBookingDto(UserMapper.toUserDto(user2),
                 ItemMapper.toItemDto(item), booking);
@@ -118,7 +85,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void findByState() throws Exception{
+    void findByState() throws Exception {
         BookingDto bookingDto = BookingMapper.toBookingDto(UserMapper.toUserDto(user2),
                 ItemMapper.toItemDto(item), booking);
 

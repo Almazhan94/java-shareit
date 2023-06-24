@@ -17,11 +17,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.request.ItemRequestController;
-import ru.practicum.shareit.request.ItemRequestMapper;
-import ru.practicum.shareit.request.ItemRequestService;
-import ru.practicum.shareit.request.dto.CreateItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
 
 import java.nio.charset.StandardCharsets;
@@ -29,9 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -72,7 +65,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void create() throws Exception{
+    void create() throws Exception {
 
         ItemDto itemDto = ItemMapper.toItemDto(item);
 
@@ -112,7 +105,7 @@ class ItemControllerTest {
     }
 
         @Test
-    void findItemByUserId() throws Exception{
+    void findItemByUserId() throws Exception {
             ItemBookingDto itemDto = ItemMapper.toItemBookingDto(new Booking(), new Booking(), item, new ArrayList<>());
 
             when(itemService.findAllItemWithBooking(user.getId()))
@@ -128,7 +121,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void getBySearch() throws Exception{
+    void getBySearch() throws Exception {
         ItemDto itemDto = ItemMapper.toItemDto(item);
 
         when(itemService.getItemBySearch(Mockito.any()))
@@ -144,7 +137,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void addComment() throws Exception{
+    void addComment() throws Exception {
         Comment comment = new Comment(1, "text", item, user2, LocalDateTime.now());
         CommentDto commentDto = ItemMapper.toCommentDto(comment);
         ItemDto itemDto = ItemMapper.toItemDto(item);

@@ -38,7 +38,7 @@ class BookingRepositoryTest {
     Booking booking2;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
          user = new User(1, "name", "e@mail.com");
         userRepository.save(user);
 

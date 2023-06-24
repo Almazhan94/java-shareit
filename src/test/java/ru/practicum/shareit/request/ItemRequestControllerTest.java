@@ -8,18 +8,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.Status;
-import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.CreateItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoWithItem;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserController;
-import ru.practicum.shareit.user.UserMapper;
-import ru.practicum.shareit.user.UserService;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -67,7 +60,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void create() throws Exception{
+    void create() throws Exception {
         ItemRequestDto itemRequestDto = ItemRequestMapper.itemRequestDto(itemRequest);
         when(itemRequestService.createRequest(user.getId(),
                 new CreateItemRequestDto("description")))
@@ -87,7 +80,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void findAll() throws Exception{
+    void findAll() throws Exception {
         ItemRequestDtoWithItem itemRequestDtoWithItem =
                 new ItemRequestDtoWithItem(1, "description", LocalDateTime.now(), List.of());
 
@@ -104,7 +97,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void findById() throws Exception{
+    void findById() throws Exception {
         ItemRequestDtoWithItem itemRequestDto = ItemRequestMapper.toItemRequestDtoWithItem(itemRequest, List.of());
         when(itemRequestService.findRequestById(user.getId(),1))
                 .thenReturn(itemRequestDto);
@@ -122,7 +115,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void findAllWith() throws Exception{
+    void findAllWith() throws Exception {
         ItemRequestDtoWithItem itemRequestDto = ItemRequestMapper.toItemRequestDtoWithItem(itemRequest, List.of());
         when(itemRequestService.findAllRequestWith(user.getId(),0, 10))
                 .thenReturn(List.of(itemRequestDto));
