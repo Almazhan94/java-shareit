@@ -103,7 +103,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return itemRequestDtoList;
     }
 
-    private void pageValid(Integer from, Integer size){
+    private void pageValid(Integer from, Integer size) {
         if (from < 0 || size <= 0) {
             throw new ValidationException("Не верный формат запроса");
         }

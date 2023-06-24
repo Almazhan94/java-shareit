@@ -32,7 +32,7 @@ public class ItemMapper {
                 itemDto.getRequestId());
     }
 
-    public static List<ItemDto> toItemDtoList ( List<Item> itemList) {
+    public static List<ItemDto> toItemDtoList(List<Item> itemList) {
         List<ItemDto> itemDtoList = new ArrayList<>();
         for (Item item : itemList) {
             itemDtoList.add(ItemMapper.toItemDto(item));
@@ -80,7 +80,7 @@ public class ItemMapper {
         return comment;
     }
 
-    public static List<CommentDto> toCommentDtoList (List<Comment> commentList) {
+    public static List<CommentDto> toCommentDtoList(List<Comment> commentList) {
         List<CommentDto> commentDtoList = new ArrayList<>();
         for (Comment comment : commentList) {
             commentDtoList.add(ItemMapper.toCommentDto(comment));

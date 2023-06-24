@@ -19,7 +19,7 @@ public class ItemRequestMapper {
         );
     }
 
-    public static List<ItemRequestDtoWithItem> toItemRequestDtoWithItemList(List<ItemRequest> itemRequestList, List<Item> itemList){
+    public static List<ItemRequestDtoWithItem> toItemRequestDtoWithItemList(List<ItemRequest> itemRequestList, List<Item> itemList) {
         List<ItemRequestDtoWithItem> itemRequestDtoList = new ArrayList<>();
         List<ItemDto> itemDtoList = new ArrayList<>();
         if (itemList.size() == 0) {
@@ -51,7 +51,7 @@ public class ItemRequestMapper {
         return itemRequestDtoList;
     }
 
-    public static ItemRequestDtoWithItem toItemRequestDtoWithItem (ItemRequest itemRequest, List<Item> itemList) {
+    public static ItemRequestDtoWithItem toItemRequestDtoWithItem(ItemRequest itemRequest, List<Item> itemList) {
         ItemRequestDtoWithItem itemRequestDtoWithItem = new ItemRequestDtoWithItem();
         itemRequestDtoWithItem.setId(itemRequest.getId());
         itemRequestDtoWithItem.setDescription(itemRequest.getDescription());

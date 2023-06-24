@@ -33,7 +33,7 @@ public class BookingMapper {
         );
     }
 
-    public static List<BookingDto> toBookingDtoList (List<Booking> bookingList, UserDto userDto) {
+    public static List<BookingDto> toBookingDtoList(List<Booking> bookingList, UserDto userDto) {
         List<BookingDto> bookingDtoList = new ArrayList<>();
         for (Booking booking : bookingList) {
             bookingDtoList.add(BookingMapper.toBookingDto(userDto, ItemMapper.toItemDto(booking.getItem()), booking));
@@ -41,7 +41,7 @@ public class BookingMapper {
         return bookingDtoList;
     }
 
-    public static List<BookingDto> toOwnerBookingDtoList (List<Booking> bookingList) {
+    public static List<BookingDto> toOwnerBookingDtoList(List<Booking> bookingList) {
         List<BookingDto> bookingDtoList = new ArrayList<>();
         for (Booking booking : bookingList) {
             bookingDtoList.add(BookingMapper.toBookingDto(UserMapper.toUserDto(booking.getBooker()),
