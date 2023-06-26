@@ -137,39 +137,39 @@ public class BookingServiceImpl implements BookingService {
         }
         UserDto userDto = UserMapper.toUserDto(userOptional.get());
         State enumState = toEnum(state);
-
         if (enumState == State.ALL) {
-            int page = from / size;
-            Sort sort = Sort.by(Sort.Direction.DESC, "startTime");
-            Pageable pageable = PageRequest.of(page, size, sort);
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
             bookings = bookingRepository.findByBookerId(userId, pageable);
             bookingDtoList = BookingMapper.toBookingDtoList(bookings, userDto);
             return bookingDtoList;
         }
         if (enumState == State.CURRENT) {
-            bookings = bookingRepository.findByBookerIdAndStartTimeIsBeforeAndEndTimeIsAfter(userId, time, time);
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
+            bookings = bookingRepository.findByBookerIdAndStartTimeIsBeforeAndEndTimeIsAfter(userId, time, time, pageable);
             bookingDtoList = BookingMapper.toBookingDtoList(bookings, userDto);
             return bookingDtoList;
         }
         if (enumState == State.PAST) {
-            bookings = bookingRepository.findByBookerIdAndEndTimeIsBefore(userId, time,
-                    Sort.by(Sort.Direction.DESC, "endTime"));
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "endTime"));
+            bookings = bookingRepository.findByBookerIdAndEndTimeIsBefore(userId, time, pageable);
             bookingDtoList = BookingMapper.toBookingDtoList(bookings, userDto);
             return bookingDtoList;
         }
         if (enumState == State.FUTURE) {
-            bookings = bookingRepository.findByBookerIdAndStartTimeIsAfter(userId, time,
-                    Sort.by(Sort.Direction.DESC, "startTime"));
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
+            bookings = bookingRepository.findByBookerIdAndStartTimeIsAfter(userId, time, pageable);
             bookingDtoList = BookingMapper.toBookingDtoList(bookings, userDto);
             return bookingDtoList;
         }
         if (enumState == State.WAITING) {
-            bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.WAITING);
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
+            bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.WAITING, pageable);
             bookingDtoList = BookingMapper.toBookingDtoList(bookings, userDto);
             return bookingDtoList;
         }
         if (enumState == State.REJECTED) {
-            bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.REJECTED);
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
+            bookings = bookingRepository.findByBookerIdAndStatus(userId, Status.REJECTED, pageable);
             bookingDtoList = BookingMapper.toBookingDtoList(bookings, userDto);
             return bookingDtoList;
         } else {
@@ -194,33 +194,34 @@ public class BookingServiceImpl implements BookingService {
         }
         State enumState = toEnum(state);
         if (enumState == State.ALL) {
-            int page = from / size;
-            Sort sort = Sort.by(Sort.Direction.DESC, "startTime");
-            Pageable pageable = PageRequest.of(page, size, sort);
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
             bookings = bookingRepository.findAllByItemIdIn(itemIdSet, pageable);
             bookingDtoList = BookingMapper.toOwnerBookingDtoList(bookings);
         }
         if (enumState == State.CURRENT) {
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
             bookings = bookingRepository.findByItemIdInAndStartTimeIsBeforeAndEndTimeIsAfter(itemIdSet, time, time,
-                    Sort.by(Sort.Direction.DESC, "startTime"));
+                pageable);
             bookingDtoList = BookingMapper.toOwnerBookingDtoList(bookings);
         }
         if (enumState == State.PAST) {
-            bookings = bookingRepository.findByItemIdInAndEndTimeIsBefore(itemIdSet, time,
-                    Sort.by(Sort.Direction.DESC, "startTime"));
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
+            bookings = bookingRepository.findByItemIdInAndEndTimeIsBefore(itemIdSet, time, pageable);
             bookingDtoList = BookingMapper.toOwnerBookingDtoList(bookings);
         }
         if (enumState == State.FUTURE) {
-            bookings = bookingRepository.findByItemIdInAndEndTimeIsAfter(itemIdSet, time,
-                    Sort.by(Sort.Direction.DESC, "startTime"));
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
+            bookings = bookingRepository.findByItemIdInAndEndTimeIsAfter(itemIdSet, time, pageable);
             bookingDtoList = BookingMapper.toOwnerBookingDtoList(bookings);
         }
         if (enumState == State.WAITING) {
-            bookings = bookingRepository.findByItemIdInAndStatus(itemIdSet, Status.WAITING);
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
+            bookings = bookingRepository.findByItemIdInAndStatus(itemIdSet, Status.WAITING, pageable);
             bookingDtoList = BookingMapper.toOwnerBookingDtoList(bookings);
         }
         if (enumState == State.REJECTED) {
-            bookings = bookingRepository.findByItemIdInAndStatus(itemIdSet, Status.REJECTED);
+            Pageable pageable = pageRequest(from, size, Sort.by(Sort.Direction.DESC, "startTime"));
+            bookings = bookingRepository.findByItemIdInAndStatus(itemIdSet, Status.REJECTED, pageable);
             bookingDtoList = BookingMapper.toOwnerBookingDtoList(bookings);
         }
         return bookingDtoList;
@@ -244,5 +245,10 @@ public class BookingServiceImpl implements BookingService {
         if (from < 0 || size <= 0) {
             throw new ValidationException("Не верный формат запроса");
         }
+    }
+
+    private Pageable pageRequest(Integer from, Integer size, Sort sort) {
+        int page = from / size;
+        return PageRequest.of(page, size, sort);
     }
 }

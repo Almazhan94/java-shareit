@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.item.ItemRepository;
@@ -97,9 +98,10 @@ class BookingRepositoryTest {
     void findByBookerIdAndStatusTest() {
         booking2.setStatus(Status.REJECTED);
         bookingRepository.save(booking2);
-
-        List<Booking> bookingList = bookingRepository.findByBookerIdAndStatus(user2.getId(), Status.APPROVED);
-        List<Booking> bookingListREJECTED = bookingRepository.findByBookerIdAndStatus(user2.getId(), Status.REJECTED);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "startTime"));
+        List<Booking> bookingList = bookingRepository.findByBookerIdAndStatus(user2.getId(), Status.APPROVED, pageable);
+        List<Booking> bookingListREJECTED = bookingRepository.findByBookerIdAndStatus(user2.getId(), Status.REJECTED,
+            pageable);
 
         assertEquals(bookingList.size(), 1);
         assertEquals(bookingListREJECTED.size(), 1);
@@ -110,7 +112,8 @@ class BookingRepositoryTest {
     @Test
     @DirtiesContext
     void findByItemIdInAndStatusTest() {
-        List<Booking> bookingList = bookingRepository.findByItemIdInAndStatus(Set.of(item.getId(), item2.getId()), Status.APPROVED);
+        List<Booking> bookingList = bookingRepository.findByItemIdInAndStatus(Set.of(item.getId(), item2.getId()),
+            Status.APPROVED, PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "startTime")));
 
         assertEquals(bookingList.size(), 2);
         assertEquals(bookingList.get(0), booking);
@@ -129,9 +132,11 @@ class BookingRepositoryTest {
         booking2.setEndTime(LocalDateTime.of(2030, 1, 1, 12, 0));
         bookingRepository.save(booking2);
 
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "startTime"));
+
         List<Booking> bookingList = bookingRepository.findByBookerIdAndStartTimeIsBeforeAndEndTimeIsAfter(user2.getId(),
                 LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now(), pageable);
         assertEquals(bookingList.size(), 1);
         assertEquals(bookingList.get(0), booking2);
     }
@@ -139,9 +144,9 @@ class BookingRepositoryTest {
     @Test
     @DirtiesContext
     void findByBookerIdAndEndTimeIsBeforeTest() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "endTime"));
         List<Booking> bookingList = bookingRepository.findByBookerIdAndEndTimeIsBefore(user2.getId(),
-                LocalDateTime.now(),
-                Sort.by(Sort.Direction.DESC, "endTime"));
+                LocalDateTime.now(), pageable);
         assertEquals(bookingList.size(), 2);
         assertEquals(bookingList.get(0), booking2);
         assertEquals(bookingList.get(1), booking);
@@ -158,8 +163,10 @@ class BookingRepositoryTest {
         booking2.setEndTime(LocalDateTime.of(2030, 1, 1, 12, 0));
         bookingRepository.save(booking2);
 
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "startTime"));
+
         List<Booking> bookingList = bookingRepository.findByBookerIdAndStartTimeIsAfter(user2.getId(), LocalDateTime.now(),
-                Sort.by(Sort.Direction.DESC, "startTime"));
+                pageable);
 
         assertEquals(bookingList.size(), 2);
         assertEquals(bookingList.get(0), booking2);
@@ -179,7 +186,7 @@ class BookingRepositoryTest {
         bookingRepository.save(booking2);
 
         List<Booking> bookingList = bookingRepository.findByItemIdInAndStartTimeIsBeforeAndEndTimeIsAfter(Set.of(item.getId(), item2.getId()),
-                LocalDateTime.now(), LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "startTime"));
+                LocalDateTime.now(), LocalDateTime.now(), PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "startTime")));
 
         assertEquals(bookingList.size(), 2);
         assertEquals(bookingList.get(0), booking2);
@@ -199,7 +206,7 @@ class BookingRepositoryTest {
         bookingRepository.save(booking2);
 
         List<Booking> bookingList = bookingRepository.findByItemIdInAndEndTimeIsAfter(Set.of(item.getId(), item2.getId()),
-                LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "startTime"));
+                LocalDateTime.now(), PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "startTime")));
 
         assertEquals(bookingList.size(), 2);
         assertEquals(bookingList.get(0), booking2);
@@ -211,7 +218,7 @@ class BookingRepositoryTest {
     void findByItemIdInAndEndTimeIsBeforeTest() {
 
         List<Booking> bookingList = bookingRepository.findByItemIdInAndEndTimeIsBefore(Set.of(item.getId(), item2.getId()),
-                LocalDateTime.now(),Sort.by(Sort.Direction.DESC, "startTime"));
+                LocalDateTime.now(), PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "startTime")));
 
         assertEquals(bookingList.size(), 2);
         assertEquals(bookingList.get(0), booking);

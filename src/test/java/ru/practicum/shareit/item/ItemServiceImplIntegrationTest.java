@@ -107,7 +107,7 @@ class ItemServiceImplIntegrationTest {
         itemService.createItem(user.getId(),
                 new ItemDto(null, "item name", "description", true, null));
 
-        List<ItemDto> itemDtoList = itemService.getItemBySearch("name");
+        List<ItemDto> itemDtoList = itemService.getItemBySearch("name", 0, 10);
 
         assertEquals(itemDtoList.size(), 1);
     }
@@ -179,7 +179,7 @@ class ItemServiceImplIntegrationTest {
 
         commentRepository.save(comment);
 
-        List<ItemBookingDto> itemBookingDtoList = itemService.findAllItemWithBooking(user.getId());
+        List<ItemBookingDto> itemBookingDtoList = itemService.findAllItemWithBooking(user.getId(), 0, 10);
 
         assertEquals(itemBookingDtoList.size(), 2);
         assertEquals(itemBookingDtoList.get(0).getLastBooking().getId(), booking.getId());

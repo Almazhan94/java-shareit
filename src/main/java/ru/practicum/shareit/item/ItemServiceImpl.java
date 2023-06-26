@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
@@ -64,12 +66,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemBySearch(String text) {
+    public List<ItemDto> getItemBySearch(String text, Integer from, Integer size) {
+        Pageable pageable = pageValid(from, size);
         List<Item> itemSearch = new ArrayList<>();
         if (text == null || text.isBlank()) {
             return new ArrayList<>();
         }
-        itemSearch = itemRepository.search(text);
+        itemSearch = itemRepository.search(text, pageable);
         List<ItemDto> itemDtoList = ItemMapper.toItemDtoList(itemSearch);
         return itemDtoList;
     }
@@ -148,13 +151,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemBookingDto> findAllItemWithBooking(int userId) {
+    public List<ItemBookingDto> findAllItemWithBooking(int userId, Integer from, Integer size) {
+        Pageable pageable = pageValid(from, size);
         LocalDateTime time = LocalDateTime.now();
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new ItemNotFoundException(String.format("Пользователь с идентификатором %d не существует", userId));
         }
-        List<Item> itemList = itemRepository.findItemByOwnerIdOrderByIdAsc(userId);
+        List<Item> itemList = itemRepository.findItemByOwnerIdOrderByIdAsc(userId, pageable);
         List<ItemBookingDto> itemBookingDtoList = new ArrayList<>();
         Booking lastBooking = new Booking();
         Booking nextBooking = new Booking();
@@ -208,5 +212,13 @@ public class ItemServiceImpl implements ItemService {
         } else {
             throw new ValidationException("Пользователь не найден в списке бронирования вещи.");
         }
+    }
+
+    private Pageable pageValid(Integer from, Integer size) {
+        if (from < 0 || size <= 0) {
+            throw new ValidationException("Не верный формат запроса");
+        }
+        int page = from / size;
+        return PageRequest.of(page, size);
     }
 }

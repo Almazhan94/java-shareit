@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
@@ -111,15 +113,15 @@ class ItemServiceImplUnitTest {
 
     @Test
     void getItemBySearch() {
-
-        when(itemRepository.search("name"))
+        Pageable pageable = PageRequest.of(0, 10);;
+        when(itemRepository.search("name", pageable))
                 .thenReturn(List.of(item, item2));
 
-        List<ItemDto> itemDtoList = itemService.getItemBySearch("name");
+        List<ItemDto> itemDtoList = itemService.getItemBySearch("name", 0, 10);
 
         assertEquals(itemDtoList.size(), 2);
 
-        List<ItemDto> itemDtoList2 = itemService.getItemBySearch("");
+        List<ItemDto> itemDtoList2 = itemService.getItemBySearch("", 0, 10);
 
         assertEquals(itemDtoList2.size(), 0);
     }
@@ -172,7 +174,8 @@ class ItemServiceImplUnitTest {
 
     @Test
     void findAllItemWithBooking() {
-        when(itemRepository.findItemByOwnerIdOrderByIdAsc(user.getId()))
+        Pageable pageable = PageRequest.of(0, 10);
+        when(itemRepository.findItemByOwnerIdOrderByIdAsc(user.getId(), pageable))
                 .thenReturn(List.of(item));
 
         when(userRepository.findById(user.getId()))
@@ -187,7 +190,7 @@ class ItemServiceImplUnitTest {
         when(commentRepository.findAllByItemId(item.getId()))
                 .thenReturn(List.of(comment));
 
-        List<ItemBookingDto> itemBookingDtoList = itemService.findAllItemWithBooking(user.getId());
+        List<ItemBookingDto> itemBookingDtoList = itemService.findAllItemWithBooking(user.getId(), 0, 10);
 
         assertEquals(itemBookingDtoList.size(), 1);
         assertEquals(itemBookingDtoList.get(0).getLastBooking().getId(), booking.getId());

@@ -108,7 +108,7 @@ class ItemControllerTest {
     void findItemByUserId() throws Exception {
             ItemBookingDto itemDto = ItemMapper.toItemBookingDto(new Booking(), new Booking(), item, new ArrayList<>());
 
-            when(itemService.findAllItemWithBooking(user.getId()))
+            when(itemService.findAllItemWithBooking(user.getId(), 0, 10))
                     .thenReturn(List.of(itemDto));
 
             mockMvc.perform(get("/items")
@@ -124,7 +124,7 @@ class ItemControllerTest {
     void getBySearch() throws Exception {
         ItemDto itemDto = ItemMapper.toItemDto(item);
 
-        when(itemService.getItemBySearch(Mockito.any()))
+        when(itemService.getItemBySearch(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(List.of(itemDto));
 
         mockMvc.perform(get("/items/search")

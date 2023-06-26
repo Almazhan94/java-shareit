@@ -84,16 +84,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoWithItem> findAllRequestWith(Integer userId, Integer from, Integer size) {
-        pageValid(from, size);
+        Pageable pageable = pageValid(from, size, Sort.by(Sort.Direction.ASC, "created"));
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new UserNotFoundException(String.format("Пользователь с идентификатором %d не существует", userId));
         }
-        Sort sort = Sort.by(Sort.Direction.ASC, "created");
-        int page = from / size;
-        Pageable pageable = PageRequest.of(page, size, sort);
         List<ItemRequest> itemRequestList = itemRequestRepository.findByRequestorIdNot(userId, pageable);
-
         Set<Integer> requestIdList = new HashSet<>();
         for (ItemRequest itemRequest : itemRequestList) {
             requestIdList.add(itemRequest.getId());
@@ -103,9 +99,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return itemRequestDtoList;
     }
 
-    private void pageValid(Integer from, Integer size) {
+    private Pageable pageValid(Integer from, Integer size, Sort sort) {
         if (from < 0 || size <= 0) {
             throw new ValidationException("Не верный формат запроса");
         }
+        int page = from / size;
+        return PageRequest.of(page, size, sort);
     }
 }

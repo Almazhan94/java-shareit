@@ -40,9 +40,11 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemBookingDto> findItemByUserId(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemBookingDto> findItemByUserId(@RequestHeader("X-Sharer-User-Id") int userId,
+                                                 @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+                                                 @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
         log.info("Ищется вещь по пользователю: {}", userId);
-        return itemService.findAllItemWithBooking(userId);
+        return itemService.findAllItemWithBooking(userId, from, size);
     }
 
     @PatchMapping("/{itemId}")
@@ -52,9 +54,11 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getBySearch(@RequestParam(value = "text",  required = false) String text) {
+    public List<ItemDto> getBySearch(@RequestParam(value = "text",  required = false) String text,
+                                     @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+                                     @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
         log.info("Ищется вещь по параметру: {}", text);
-        return itemService.getItemBySearch(text);
+        return itemService.getItemBySearch(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
