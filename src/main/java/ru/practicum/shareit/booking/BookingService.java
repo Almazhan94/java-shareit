@@ -13,7 +13,7 @@ public interface BookingService {
 
     BookingDto update(int userId, int bookingId, String approved);
 
-    List<BookingDto> findByState(int userId, String state);
+    List<BookingDto> findByState(int userId, String state, Integer from, Integer size);
 
-    List<BookingDto> findOwnerBooking(int ownerId, String state);
+    List<BookingDto> findOwnerBooking(int ownerId, String state, Integer from, Integer size);
 }

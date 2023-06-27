@@ -13,13 +13,13 @@ public interface ItemService {
 
     ItemDto createItem(int userId, ItemDto itemDto);
 
-    List<ItemDto> getItemBySearch(String text);
+    List<ItemDto> getItemBySearch(String text, Integer from, Integer size);
 
     ItemDto patchItem(int userId, int itemId, ItemDto itemDto);
 
     ItemBookingDto findItemByIdWithBooking(int userId, int itemId);
 
-    List<ItemBookingDto> findAllItemWithBooking(int userId);
+    List<ItemBookingDto> findAllItemWithBooking(int userId, Integer from, Integer size);
 
     CommentDto addComment(Integer userId, int itemId, AddCommentDto addCommentDto);
 

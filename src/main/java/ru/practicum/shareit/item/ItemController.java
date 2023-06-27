@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.error.Generated;
 import ru.practicum.shareit.item.dto.AddCommentDto;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
@@ -12,6 +13,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import javax.validation.Valid;
 import java.util.List;
 
+@Generated
 @Slf4j
 @RestController
 @RequestMapping("/items")
@@ -38,9 +40,11 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemBookingDto> findItemByUserId(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemBookingDto> findItemByUserId(@RequestHeader("X-Sharer-User-Id") int userId,
+                                                 @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+                                                 @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
         log.info("Ищется вещь по пользователю: {}", userId);
-        return itemService.findAllItemWithBooking(userId);
+        return itemService.findAllItemWithBooking(userId, from, size);
     }
 
     @PatchMapping("/{itemId}")
@@ -50,9 +54,11 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getBySearch(@RequestParam(value = "text",  required = false) String text) {
+    public List<ItemDto> getBySearch(@RequestParam(value = "text",  required = false) String text,
+                                     @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+                                     @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
         log.info("Ищется вещь по параметру: {}", text);
-        return itemService.getItemBySearch(text);
+        return itemService.getItemBySearch(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

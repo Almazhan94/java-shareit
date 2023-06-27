@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
@@ -64,16 +66,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemBySearch(String text) {
+    public List<ItemDto> getItemBySearch(String text, Integer from, Integer size) {
+        Pageable pageable = pageValid(from, size);
         List<Item> itemSearch = new ArrayList<>();
         if (text == null || text.isBlank()) {
             return new ArrayList<>();
         }
-        itemSearch = itemRepository.search(text);
-        List<ItemDto> itemDtoList = new ArrayList<>();
-        for (Item item : itemSearch) {
-            itemDtoList.add(ItemMapper.toItemDto(item));
-        }
+        itemSearch = itemRepository.search(text, pageable);
+        List<ItemDto> itemDtoList = ItemMapper.toItemDtoList(itemSearch);
         return itemDtoList;
     }
 
@@ -118,31 +118,30 @@ public class ItemServiceImpl implements ItemService {
         List<CommentDto> commentDtoList = new ArrayList<>();
         if (item.isPresent()) {
             if (item.get().getOwner().getId() == userId) {
-                List<Booking> lastBookingList = bookingRepository.findByItemIdAndStatusAndEndTimeIsBefore(itemId, Status.APPROVED, time, Sort.by(Sort.Direction.DESC, "endTime"));
+                List<Booking> lastBookingList = bookingRepository.findByItemIdAndStatusAndEndTimeIsBefore(itemId,
+                        Status.APPROVED, time, Sort.by(Sort.Direction.DESC, "endTime"));
                 if (!lastBookingList.isEmpty()) {
                     lastBooking = lastBookingList.get(0);
                 }
-                List<Booking> currentBookingList = bookingRepository.findByItemIdAndStartTimeIsBeforeAndEndTimeIsAfter(itemId, time, time);
+                List<Booking> currentBookingList = bookingRepository.findByItemIdAndStartTimeIsBeforeAndEndTimeIsAfter(itemId,
+                        time, time);
                 if (!currentBookingList.isEmpty()) {
                     lastBooking = currentBookingList.get(0);
                 }
-                List<Booking> nextBookingList = bookingRepository.findByItemIdAndStatusAndStartTimeIsAfter(itemId, Status.APPROVED, time, Sort.by("startTime"));
+                List<Booking> nextBookingList = bookingRepository.findByItemIdAndStatusAndStartTimeIsAfter(itemId,
+                        Status.APPROVED, time, Sort.by("startTime"));
                 if (!nextBookingList.isEmpty()) {
                     nextBooking = nextBookingList.get(0);
                 }
                 commentList = commentRepository.findAllByItemId(itemId);
                 if (!commentList.isEmpty()) {
-                    for (Comment comment : commentList) {
-                        commentDtoList.add(ItemMapper.toCommentDto(comment));
-                    }
+                    commentDtoList = ItemMapper.toCommentDtoList(commentList);
                 }
                 return ItemMapper.toItemBookingDto(lastBooking, nextBooking, item.get(), commentDtoList);
             } else {
                 commentList = commentRepository.findAllByItemId(itemId);
                 if (!commentList.isEmpty()) {
-                    for (Comment comment : commentList) {
-                        commentDtoList.add(ItemMapper.toCommentDto(comment));
-                    }
+                    commentDtoList = ItemMapper.toCommentDtoList(commentList);
                 }
                 return ItemMapper.toItemBookingDto(lastBooking, nextBooking, item.get(), commentDtoList);
             }
@@ -152,13 +151,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemBookingDto> findAllItemWithBooking(int userId) {
+    public List<ItemBookingDto> findAllItemWithBooking(int userId, Integer from, Integer size) {
+        Pageable pageable = pageValid(from, size);
         LocalDateTime time = LocalDateTime.now();
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new ItemNotFoundException(String.format("Пользователь с идентификатором %d не существует", userId));
         }
-        List<Item> itemList = itemRepository.findItemByOwnerIdOrderByIdAsc(userId);
+        List<Item> itemList = itemRepository.findItemByOwnerIdOrderByIdAsc(userId, pageable);
         List<ItemBookingDto> itemBookingDtoList = new ArrayList<>();
         Booking lastBooking = new Booking();
         Booking nextBooking = new Booking();
@@ -166,13 +166,15 @@ public class ItemServiceImpl implements ItemService {
         List<CommentDto> commentDtoList = new ArrayList<>();
         if (!itemList.isEmpty()) {
             for (Item item : itemList) {
-                List<Booking> lastBookingList = bookingRepository.findByItemIdAndEndTimeIsBefore(item.getId(), time, Sort.by(Sort.Direction.DESC, "endTime"));
+                List<Booking> lastBookingList = bookingRepository.findByItemIdAndEndTimeIsBefore(item.getId(), time,
+                        Sort.by(Sort.Direction.DESC, "endTime"));
                 if (!lastBookingList.isEmpty()) {
                     lastBooking = lastBookingList.get(0);
                 } else {
                     lastBooking = null;
                 }
-                List<Booking> nextBookingList = bookingRepository.findByItemIdAndStartTimeIsAfter(item.getId(), time, Sort.by("startTime"));
+                List<Booking> nextBookingList = bookingRepository.findByItemIdAndStartTimeIsAfter(item.getId(), time,
+                        Sort.by("startTime"));
                 if (!nextBookingList.isEmpty()) {
                     nextBooking = nextBookingList.get(0);
                 } else {
@@ -201,16 +203,22 @@ public class ItemServiceImpl implements ItemService {
         if (itemOptional.isEmpty()) {
             throw new ItemNotFoundException(String.format("Вещь с идентификатором %d не существует", itemId));
         }
-        List<Booking> userBookingList = bookingRepository.findByBookerIdAndItemIdAndStatusAndEndTimeIsBefore(userId, itemId, Status.APPROVED, time);
+        List<Booking> userBookingList = bookingRepository.findByBookerIdAndItemIdAndStatusAndEndTimeIsBefore(userId,
+                itemId, Status.APPROVED, time);
         if (!userBookingList.isEmpty()) {
-            Comment comment = new Comment();
-            comment.setText(addCommentDto.getText());
-            comment.setAuthor(userOptional.get());
-            comment.setItem(itemOptional.get());
+            Comment comment = ItemMapper.toComment(userOptional.get(), itemOptional.get(), addCommentDto);
             commentRepository.save(comment);
             return ItemMapper.toCommentDto(comment);
         } else {
             throw new ValidationException("Пользователь не найден в списке бронирования вещи.");
         }
+    }
+
+    private Pageable pageValid(Integer from, Integer size) {
+        if (from < 0 || size <= 0) {
+            throw new ValidationException("Не верный формат запроса");
+        }
+        int page = from / size;
+        return PageRequest.of(page, size);
     }
 }
