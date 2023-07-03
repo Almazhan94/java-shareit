@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 @Slf4j
 @RestController
 @RequestMapping(path = "/users")
+@Validated
 public class UserController {
 
     private final UserClient userClient;

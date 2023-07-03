@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
+import ru.practicum.shareit.error.ValidationException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -26,6 +27,9 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                            @RequestBody @Valid BookItemRequestDto requestDto) {
+        if (requestDto.getEnd().isBefore(requestDto.getStart()) || requestDto.getStart().isEqual(requestDto.getEnd())) {
+            throw new ValidationException("Не корректная дата бронирования");
+        }
         log.info("Добавляется бронирование: {}, пользователем с Id = {}", requestDto, userId);
         return bookingClient.bookItem(userId, requestDto);
     }

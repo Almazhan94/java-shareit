@@ -5,9 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.error.Generated;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 @Generated
 @Data
 @AllArgsConstructor
@@ -16,13 +13,10 @@ public class ItemDto {
 
     private Integer id;
 
-    @NotBlank
     private String name;
 
-    @NotBlank
     private String description;
 
-    @NotNull
     private Boolean available;
 
     Integer requestId;

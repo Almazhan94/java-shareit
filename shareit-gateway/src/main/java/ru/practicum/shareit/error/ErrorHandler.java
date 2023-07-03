@@ -3,6 +3,9 @@ package ru.practicum.shareit.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,7 +29,11 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler(value = {ValidationException.class, IllegalArgumentException.class})
+    @ExceptionHandler(value = {ValidationException.class,
+        IllegalArgumentException.class,
+        MissingRequestHeaderException.class,
+        MissingServletRequestParameterException.class,
+        MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final RuntimeException e) {
         log.info(e.getMessage());
@@ -46,4 +53,12 @@ public class ErrorHandler {
         log.info(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleThrowableException(final Throwable e) {
+        log.info(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
 }

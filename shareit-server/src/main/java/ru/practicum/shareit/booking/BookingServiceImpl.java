@@ -43,7 +43,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto create(int bookerId, CreateBookingDto createBookingDto) {
-        validator(createBookingDto.getStart(), createBookingDto.getEnd());
         Optional<User> bookerOptional = userRepository.findById(bookerId);
         if (bookerOptional.isEmpty()) {
             throw new ItemNotFoundException(String.format("Пользователь с идентификатором %d не существует", bookerId));
@@ -223,12 +222,6 @@ public class BookingServiceImpl implements BookingService {
             bookingDtoList = BookingMapper.toOwnerBookingDtoList(bookings);
         }
         return bookingDtoList;
-    }
-
-    private void validator(LocalDateTime start, LocalDateTime end) {
-        if (start.isBefore(time) || end.isBefore(time) || end.isBefore(start) || start.isEqual(end)) {
-            throw new ValidationException("Не корректная дата бронирования");
-        }
     }
 
     private State toEnum(String state) {
